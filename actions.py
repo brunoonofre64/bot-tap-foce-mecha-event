@@ -1,3 +1,4 @@
+# actions.py
 import time
 import pyautogui
 
@@ -5,9 +6,12 @@ pyautogui.FAILSAFE = False
 pyautogui.useImageNotFoundException(False)
 
 
-def clicar_imagem(img, log_fn, descricao):
+# ============================================================
+# CLIQUE GENÉRICO EM IMAGEM (suporta confiança!)
+# ============================================================
+def clicar_imagem(img, log_fn, descricao, confianca=0.65):
     try:
-        item = pyautogui.locateOnScreen(img, confidence=0.65)
+        item = pyautogui.locateOnScreen(img, confidence=confianca)
     except:
         return False
 
@@ -23,6 +27,9 @@ def clicar_imagem(img, log_fn, descricao):
     return False
 
 
+# ============================================================
+# SKIP REFORÇADO (agora com IMAGE_PATH)
+# ============================================================
 def skip_com_reforco(log_fn):
     tentativas = 0
     max_tentativas = 10
@@ -31,7 +38,9 @@ def skip_com_reforco(log_fn):
         tentativas += 1
 
         try:
-            skip_item = pyautogui.locateOnScreen("skip.png", confidence=0.65)
+            skip_item = pyautogui.locateOnScreen("images/skip.png",
+                                                 confidence=0.65
+                                                 )
         except:
             skip_item = None
 
@@ -42,7 +51,10 @@ def skip_com_reforco(log_fn):
             time.sleep(0.6)
 
             try:
-                ainda_tem_5x = pyautogui.locateOnScreen("5x.png", confidence=0.65)
+                ainda_tem_5x = pyautogui.locateOnScreen(
+                    "images/5x.png",
+                    confidence=0.65
+                )
             except:
                 ainda_tem_5x = None
 
@@ -57,24 +69,25 @@ def skip_com_reforco(log_fn):
     return False
 
 
+# ============================================================
+# SEQUÊNCIA QUANDO DETECTA "MÁXIMO MECHA"
+# ============================================================
 def tratar_maximo_mecha(log_fn):
-    from actions import clicar_imagem  # evitar ciclo circular
-
     log_fn("[ALERTA] Máximo Mecha detectado — iniciando sequência especial")
 
-    clicar_imagem("cancelar.png", log_fn, "Cancelar Máximo Mecha")
+    clicar_imagem("images/cancelar.png", log_fn, "Cancelar Máximo Mecha")
     time.sleep(2)
 
-    clicar_imagem("mecha_chefe.png", log_fn, "Mecha Chefe")
+    clicar_imagem("images/mecha_chefe.png", log_fn, "Mecha Chefe")
     time.sleep(2)
 
-    clicar_imagem("refresh.png", log_fn, "Refresh (1)")
+    clicar_imagem("images/refresh.png", log_fn, "Refresh (1)")
     time.sleep(2)
 
-    clicar_imagem("refresh.png", log_fn, "Refresh (2)")
+    clicar_imagem("images/refresh.png", log_fn, "Refresh (2)")
     time.sleep(2)
 
-    clicar_imagem("mecha_local.png", log_fn, "Mecha Local")
+    clicar_imagem("images/mecha_local.png", log_fn, "Mecha Local")
     time.sleep(2)
 
     log_fn("[CICLO] Reiniciando após Máximo Mecha")
