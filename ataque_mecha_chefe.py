@@ -129,7 +129,7 @@ def encontrar_mechas_real(log_fn):
             encontrados.append((img, (cx, cy)))
 
     encontrados.sort(key=lambda x: x[1][1])
-    log_fn(f"[INFO] {len(encontrados)} mechas encontrados.")
+    log_fn(f"[INFO] mechas encontrados.")
     return encontrados
 
 

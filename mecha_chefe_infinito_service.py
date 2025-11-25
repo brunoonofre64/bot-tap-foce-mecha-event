@@ -12,6 +12,7 @@ from ataque_mecha_chefe import (
 pyautogui.FAILSAFE = False
 pyautogui.useImageNotFoundException(False)
 
+
 # ============================================================
 # Função auxiliar — abre Mecha Chefe e dá refresh
 # ============================================================
@@ -20,14 +21,13 @@ def abrir_mecha_chefe(log_fn):
     log_fn("[CHEFE ∞] Abrindo Mecha Chefe + Refresh")
     log_fn("────────────────────────────────────────────")
 
-    # 1) Clicar no ícone do Mecha Chefe
     try:
         pos = pyautogui.locateCenterOnScreen("images/mecha_chefe.png", confidence=0.70)
     except Exception:
         pos = None
 
     if not pos:
-        log_fn("[ERRO] Ícone Mecha Chefe NÃO encontrado na tela.")
+        log_fn("[ERRO] Ícone Mecha Chefe NÃO encontrado.")
         return False
 
     try:
@@ -37,9 +37,9 @@ def abrir_mecha_chefe(log_fn):
         log_fn("[ERRO] Falha ao clicar no ícone Mecha Chefe.")
         return False
 
-    time.sleep(0.8)
+    time.sleep(1.0)
 
-    # 2) Clicar no botão de refresh
+    # Refresh
     try:
         pos_ref = pyautogui.locateCenterOnScreen("images/refresh.png", confidence=0.70)
     except Exception:
@@ -61,7 +61,7 @@ def abrir_mecha_chefe(log_fn):
 
 
 # ============================================================
-# LOOP INFINITO — ATACA MECHA CHEFE PRA SEMPRE
+# LOOP INFINITO — ATACA MECHA CHEFE PRA SEMPRE (com rodízio)
 # ============================================================
 def fluxo_mecha_chefe_infinito(log_fn):
     log_fn("====================================================================")
@@ -80,28 +80,46 @@ def fluxo_mecha_chefe_infinito(log_fn):
 
         time.sleep(1.0)
 
-        # 2 — scan mechas
+        # 2 — scan mechas atuais
         mechas = encontrar_mechas_real(log_fn)
         if not mechas:
-            log_fn("[WARN] Nenhum mecha encontrado → tentar novamente.")
+            log_fn("[WARN] Nenhum mecha encontrado → novo refresh.")
             time.sleep(1)
             continue
 
-        # 3 — testar cada mecha até achar um válido
+        total = len(mechas)
+        start_index = state.indice_mecha_chefe % total
+
+        log_fn(
+            f"[INFO] {total} mechas encontrados. "
+            f"Iniciando rodízio a partir da posição lógica {start_index + 1}/{total}."
+        )
+
         mecha_ok = False
-        for img, pos in mechas:
+
+        # 3 — testar cada mecha começando do índice atual (rodízio)
+        for offset in range(total):
+            idx = (start_index + offset) % total
+            img, pos = mechas[idx]
+
             if not state.bot_ativo or not state.modo_mecha_chefe_infinito or state.hard_stop:
                 log_fn("[STOP] Estado alterado durante o loop → saindo do fluxo infinito.")
                 return
 
             ok = testar_mecha(img, pos, log_fn)
+
             if ok:
                 log_fn("[CHEFE ∞] Mecha válido encontrado → iniciando combate.")
                 executar_combate(log_fn)
+
+                # Próximo ciclo começa pelo próximo mecha na lista
+                state.indice_mecha_chefe = (idx + 1) % total
                 mecha_ok = True
                 break
 
         if not mecha_ok:
+            # Se nenhum mecha foi válido, reseta o índice pro início
+            state.indice_mecha_chefe = 0
             log_fn("[WARN] Nenhum mecha válido neste ciclo → tentando de novo.")
             time.sleep(1)
             continue

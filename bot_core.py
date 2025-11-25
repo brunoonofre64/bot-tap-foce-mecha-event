@@ -14,7 +14,9 @@ def iniciar_bot(log_fn, status_fn):
     state.bot_ativo = True
     state.hard_stop = False
 
-    # Loga claramente qual modo o F5 vai rodar
+    # sempre que iniciar o bot, zera o índice de mecha do chefe
+    state.indice_mecha_chefe = 0
+
     if state.modo_mecha_chefe_infinito:
         log_fn("[START] F5 acionado em MODO MECHA CHEFE INFINITO (sem Mecha Local).")
     else:
@@ -23,10 +25,12 @@ def iniciar_bot(log_fn, status_fn):
     thread = threading.Thread(
         target=bot_loop,
         args=(log_fn, status_fn),
-        daemon=True,
+        daemon=True
     )
     thread.start()
+
     log_fn("⏩ Bot iniciado (F5).")
+
 
 # ============================================================
 # PARAR BOT (F6)
@@ -39,6 +43,9 @@ def parar_bot(log_fn, status_fn):
     state.bot_ativo = False
     state.hard_stop = True
     state.modo_3x_permanente = False
+
+    # ao parar, zera o índice também
+    state.indice_mecha_chefe = 0
 
     log_fn("⛔ Parando bot (F6)...")
     status_fn("STATUS: PARADO", "red")
