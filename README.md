@@ -10,6 +10,9 @@ Você **não precisa de Python**, só baixar, extrair e rodar.
 Baixe o executável compactado aqui:  
 [📦 exe.win-amd64-3.10.zip](https://github.com/brunoonofre64/bot-tap-foce-mecha-event/blob/master/exe.win-amd64-3.10.zip)
 
+<img width="1898" height="250" alt="image" src="https://github.com/user-attachments/assets/28840496-9615-40a9-87bb-f31e349ca416" />
+
+
 ---
 
 ## 🚀 Como usar
